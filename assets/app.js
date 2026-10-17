@@ -1,0 +1,14 @@
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const dateEl=$('#today');try{dateEl.textContent=new Intl.DateTimeFormat('fa-IR-u-ca-persian',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date())}catch(e){}
+$('#themeToggle').addEventListener('click',()=>{document.body.classList.toggle('dark');localStorage.setItem('ardakan-theme',document.body.classList.contains('dark')?'dark':'light')});
+if(localStorage.getItem('ardakan-theme')==='dark')document.body.classList.add('dark');
+$('#fontToggle').addEventListener('click',()=>{let current=parseFloat(getComputedStyle(document.body).fontSize);document.body.style.fontSize=(current>=18?16:current+1)+'px'});
+$('#menuToggle').addEventListener('click',()=>$('#navLinks').classList.toggle('open'));
+$$('.nav-links a').forEach(a=>a.addEventListener('click',()=>{ $$('.nav-links a').forEach(x=>x.classList.remove('active'));a.classList.add('active');$('#navLinks').classList.remove('open')}));
+$$('.filter').forEach(btn=>btn.addEventListener('click',()=>{$$('.filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const f=btn.dataset.filter;$$('.news-card').forEach(card=>card.style.display=(f==='all'||card.dataset.category===f)?'':'none')}));
+function searchSite(){const q=$('#searchInput').value.trim().toLocaleLowerCase('fa');if(!q){$('#searchInput').focus();return}let count=0;$$('.news-card').forEach(card=>{const match=card.innerText.toLocaleLowerCase('fa').includes(q);card.style.display=match?'':'none';if(match)count++});$$('.filter').forEach(b=>b.classList.remove('active'));if(count===0)alert('موردی با این عبارت در خبرهای نمایشی پیدا نشد. بخش‌های دیگر سایت را هم بررسی کنید.');$('#news').scrollIntoView({behavior:'smooth'});}
+$('#searchBtn').addEventListener('click',searchSite);$('#searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')searchSite()});
+$('#showAllNews').addEventListener('click',()=>{$$('.news-card').forEach(c=>c.style.display='');$$('.filter').forEach(b=>b.classList.remove('active'));$('.filter[data-filter="all"]').classList.add('active');$('#searchInput').value=''});
+$('#contactForm').addEventListener('submit',e=>{e.preventDefault();$('#formMessage').textContent='این نسخه نمایشی است؛ برای ارسال واقعی پیام باید فرم به سامانه سرور متصل شود.';});
+const topBtn=$('#toTop');window.addEventListener('scroll',()=>topBtn.style.display=window.scrollY>400?'block':'none');topBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';observer.unobserve(e.target)}}),{threshold:.08});$$('.news-card,.quick-card,.service-card,.form-item').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(12px)';el.style.transition='opacity .5s ease,transform .5s ease';observer.observe(el)});
